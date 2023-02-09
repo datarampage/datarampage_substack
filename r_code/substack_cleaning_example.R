@@ -1,4 +1,3 @@
-library(readxl)
 library(tidyverse)
 library(lubridate)
 library(googlesheets4)
@@ -14,14 +13,6 @@ tidycols <- function(df) {
   
   dfnames <- gsub('%','pct',dfnames,fixed=TRUE)
   
-  dfnames <- gsub('Ø','avg',dfnames,fixed=TRUE)
-  
-  dfnames <- gsub('$','usd',dfnames,fixed=TRUE)
-  
-  dfnames <- gsub('€','eur',dfnames,fixed=TRUE)
-  
-  dfnames <- gsub('£','gbp',dfnames,fixed=TRUE)
-  
   dfnames <- to_snake_case(dfnames,sep_out = "_")
   
   dfnames <- tolower(gsub(" ","_",dfnames))
@@ -36,18 +27,20 @@ tidycols <- function(df) {
   
 }
 
-#read the file in
+#authenticate
 
 gs4_auth()
 
-url <- 'https://docs.google.com/spreadsheets/d/1n1YZSThrLEjqj7kvRD8rKJsPF5NAe_kGhSzmZtYv4RM/edit#gid=0'
+#read the file in
+
+url <- 'https://docs.google.com/spreadsheets/d/1n1YZSThrLEjqj7kvRD8rKJsPF5NAe_kGhSzmZtYv4RM/edit?usp=sharing'
 
 test <- read_sheet(url,skip = 4,col_types = 'c') %>%
   tidycols()
 
 #clean the data
 
-test <- test %>%
+test2 <- test %>%
   #remove missing rows
   filter(!is.na(time)) %>%
   #create a proper date column
@@ -69,14 +62,13 @@ test <- test %>%
 
 #viz example using the latest timestamp from each day
 
-test_clean <- test %>%
+test_clean <- test2 %>%
   pivot_longer(cols = c(variable_1,variable_2,variable_3),names_to = 'measurement') 
 
 test_clean %>%
   group_by(date,measurement) %>%
-  mutate(latest_timestamp = timestamp == max(timestamp)) %>%
+  summarize(value = mean(value)) %>%
   ungroup() %>%
-  filter(latest_timestamp == T) %>%
   ggplot(aes(x = date,y = value,col=measurement ))+
   geom_line()+
   scale_x_date()+
@@ -89,7 +81,7 @@ test_clean %>%
   ylab('Value')+
   xlab('Date')
 
-#write it
+#write it to a GSheet
 
 gfile_url <- 'YOUR NEW GOOGLE SHEETS URL'
 
