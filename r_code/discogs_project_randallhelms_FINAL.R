@@ -92,6 +92,6 @@ values %>%
   ggplot(aes(x = avg_eur, y = after_stat(density), fill = after_stat(density))) + 
   geom_histogram(binwidth = 2, color = "white") +
   scale_fill_gradient(low = "#003C72", high = "#14b9d5") +
-  labs(title = "Distribution of Mean Discogs Suggested Prices", x = "Avg. Value EUR", y = "Frequency")+
+  labs(title = "Pearsall's Mixes: Distribution of Mean Discogs Suggested Prices", x = "Avg. Value EUR", y = "Frequency")+
   guides(fill='none')+
   theme_clean()
