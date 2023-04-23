@@ -88,10 +88,38 @@ values <- list_releases_df %>%
 
 #visualize the results
 
-values %>%
+value_histogram <- values %>%
   ggplot(aes(x = avg_eur, y = after_stat(density), fill = after_stat(density))) + 
   geom_histogram(binwidth = 2, color = "white") +
-  scale_fill_gradient(low = "#003C72", high = "#14b9d5") +
+  scale_fill_gradient(low = "#FF4B00", high = "#FFDD00") +
   labs(title = "Pearsall's Mixes: Distribution of Mean Discogs Suggested Prices", x = "Avg. Value EUR", y = "Frequency")+
   guides(fill='none')+
-  theme_clean()
+  theme_clean() 
+
+value_scatter <- values %>% 
+  ggplot(aes(x=items,y=avg_eur,size=items,col=avg_eur)) + 
+  geom_point() + 
+  theme_clean() + 
+  scale_color_gradient(low = "#FF4B00", high = "#FFDD00")+
+  labs(title = "Pearsall's Mixes: Avg Price EUR vs # of Records", y = "Avg. Value EUR", x = "# of Records Used")+
+  theme(  legend.position = "bottom", # move both legends to bottom
+          legend.box = "horizontal", # arrange the legends horizontally
+          legend.margin = margin(t = 0, r = 0, b = 0, l = 0), # remove margin around the legends
+          legend.spacing = unit(0.2, "cm") # set spacing between the legends
+  )
+
+value_scatter_se <- value_scatter+
+  geom_smooth(linetype=2,color=alpha('black',.5))
+
+value_scatter_v2 <- values %>% 
+  ggplot(aes(x=med_eur,y=avg_eur,size=max_min_diff,col=avg_eur)) + 
+  geom_point() + 
+  theme_clean() + 
+  scale_color_gradient(low = "#FF4B00", high = "#FFDD00")+
+  labs(title = "Pearsall's Mixes: Avg  vs Median Price EUR", y = "Avg. Value EUR", x = "Med. Value EUR")+
+  theme(  legend.position = "bottom", # move both legends to bottom
+          legend.box = "horizontal", # arrange the legends horizontally
+          legend.margin = margin(t = 0, r = 0, b = 0, l = 0), # remove margin around the legends
+          legend.spacing = unit(0.2, "cm") # set spacing between the legends
+  )+
+  geom_smooth(linetype=2,color=alpha('black',0.5))
